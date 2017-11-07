@@ -6,7 +6,7 @@ arcpy.env.workspace = "C:/Workspace"
 
 
 
-class classRaster: #class definition for the frames made from the whole raster
+class classifiedRaster: #class definition for the frames made from the whole raster
     def __init__(self, in_ras, in_size, in_ratio,in_classification): #inputs: main raster, frame size (5m x 5m), ratio (80%), and desired classification (weeds).
         self.__inras = in_ras
         self.__frame_size = in_size
