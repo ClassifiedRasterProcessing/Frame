@@ -7,9 +7,10 @@ arcpy.env.workspace = "C:/Workspace"
 
 
 class classifiedRaster: #class definition for the frames made from the whole raster
-    def __init__(self, in_ras, in_size, in_ratio,in_classification): #inputs: main raster, frame size (5m x 5m), ratio (80%), and desired classification (weeds).
+    def __init__(self, in_ras, in_sizeX, in_sizeY, in_ratio,in_classification): #inputs: main raster, frame size (5m x 10m), ratio (80%), and desired classification (weeds).
         self.__inras = in_ras
-        self.__frame_size = in_size
+        self.__frameX = in_sizeX
+        self.__frameY = in_sizeY
         self.__frame_ratio = in_ratio
         self.__in_class = in_classification
         self.__max_y = GetRasterProperties_management(in_ras, TOP) #see documentation. Lots of available properties
@@ -30,13 +31,14 @@ class classifiedRaster: #class definition for the frames made from the whole ras
                 #arcpy.Clip_management("image.tif","1952602.23 294196.279 1953546.23 296176.279","clip.gdb/clip", "#", "#", "NONE")
 
                 rectangle = str(x) + " " + str(y) + " " + str(x+__frame_size) + " " + str(y+__frame_size) #bounds of our frame for the clip tool
-               # arcpy.Clip_management(inras,rectangle, outras)#create frame -> clip out a section of the main raster
+               # frame = arcpy.Clip_management(inras,rectangle, frame)#create frame -> clip out a section of the main raster
                 #stopped here since might not need to create mini rasters if ratio can do it without this
 
                     #pass the frame to the ratio function to determine if it fits criteria
-                        #process frame -> call ratio function and give it our frame, classification, and ratio. Expect True/False returned
-                            #reclassify raster if meets criteria
-                            #decision point -> adjust counters if frame is valid, and store it in a list of positive frames.
+                    if density(frame, __frame_ratio, __in_class): #Case it passes
+                        #reclassify raster
+                        #adjust counters and store it in a list of positive frames.
+                    
 
                 #decide how we want the final raster output
                   #bunch of tiny rasters? Cursor during decision point
