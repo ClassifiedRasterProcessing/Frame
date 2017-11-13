@@ -45,7 +45,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
             x += __frame_size#incrementing our counters
         y += __frame_size
         
-    def density():
+    def density(inras, ratio, classification): #added the needed inputs
 
         my_items = collections.defaultdict(set)
         for row in cur1:
@@ -60,4 +60,4 @@ class classifiedRaster: #class definition for the frames made from the whole ras
         for i in my_items.values:
             dicts[n] = values[i / total]
             n += 1
-        print(dicts)
+        print(dicts) #edit this to a return statement (true/false) based on the input classification as the index and the ratio for the logic
