@@ -1,7 +1,7 @@
 #object definition for our frame class
-#potentially have ratio calculation be a function
+#output: feature class with polygon for each frame with its determined ratio value
 
-import arcpy
+import arcpy, collections
 arcpy.env.workspace = "C:/Workspace"
 
 
@@ -21,32 +21,33 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 
    
     def processRaster():   
-    
-        x = __min_x #temp variables for adjusting frames
-        y = __min_y
+        fc = r"c:/data/gdb.gdb/valid_frames" #talk to Jacob -> make this an input file location
+        cursor = arcpy.da.InsertCursor(fc, ["SHAPE@"]) #cursor for creating the valid frame feature class
+
+        y = __min_y #set to bottom of in raster
         while(y < __max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
+            x = __min_x #set to left bound of in raster
             while (x < __max_x): #"side to side" processing
-
-                #example of clip tool. We'll need to clip the main raster to create each frame. http://pro.arcgis.com/en/pro-app/tool-reference/data-management/clip.htm 
-                #arcpy.Clip_management("image.tif","1952602.23 294196.279 1953546.23 296176.279","clip.gdb/clip", "#", "#", "NONE")
-
                 rectangle = str(x) + " " + str(y) + " " + str(x+__frame_size) + " " + str(y+__frame_size) #bounds of our frame for the clip tool
-               # frame = arcpy.Clip_management(inras,rectangle, frame)#create frame -> clip out a section of the main raster
-                #stopped here since might not need to create mini rasters if ratio can do it without this
 
-                    #pass the frame to the ratio function to determine if it fits criteria
-                    if density(frame, __frame_ratio, __in_class): #Case it passes
-                        #reclassify raster
-                        #adjust counters and store it in a list of positive frames.
-                    
+                #NEEDS TO BE EDITED. FRAME SHOULD BE A TEMP FILE IN THE SAME WORKSPACE AS THE VALID FRAME FC
+                arcpy.Clip_management(inras,rectangle, frame)#create frame -> clip out a section of the main raster 
+                
+                validFrame, validRatio = density(frame, __frame_ratio, __in_class) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
+                if validFrame: #Case it passes
+                    array = arcpy.Array([arcpy.Point(0, 0), arcpy.Point(0, 1000),arcpy.Point(1000, 1000),arcpy.Point(1000, 0)]) #creating the frame polygon
+                    polygon = arcpy.Polygon(array)
+                    #need to somehow add validRatio to the attribute table
+           
+                    cursor.insertRow([polygon]) #add frame to feature class
 
-                #decide how we want the final raster output
-                  #bunch of tiny rasters? Cursor during decision point
-                  #compiled raster? Merge tool http://desktop.arcgis.com/en/arcmap/10.3/manage-data/raster-and-images/merge-raster-function.htm 
+                    x += __frameX #adjust counter for positive condition
+                    continue #back to beginning of while loop
 
-            x += __frame_size#incrementing our counters
-        y += __frame_size
-        
+                x += int(__frameX/2)#move half a frame "right"...case when previous frame invalid "Fast option"
+            y += int(__frameY/2)#move half a frame "up" ... "Fast option"
+        del cursor #prevent data corruption by deleting cursor when finished
+
     def density(inras, ratio, classification): #added the needed inputs
 
         my_items = collections.defaultdict(set)
