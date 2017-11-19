@@ -62,8 +62,8 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 					x += self.__frameX #adjust counter for positive condition
 					continue #back to beginning of while loop
 
-				x += int(self.__frameX/2)#move half a frame "right"...case when previous frame invalid "Fast option"
-			y += int(self.__frameY/2)#move half a frame "up" ... "Fast option"
+				x += int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
+			y += int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"
 		del cursor #prevent data corruption by deleting cursor when finished
 		
 		
