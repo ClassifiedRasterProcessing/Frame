@@ -63,7 +63,9 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 					continue #back to beginning of while loop
 
 				x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
-			y= int(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"
+			arcpy.AddMessage(__min_y)
+			arcpy.AddMessage(y)
+			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"
 		del cursor #prevent data corruption by deleting cursor when finished
 		
 		
