@@ -10,9 +10,9 @@ class classifiedRaster: #class definition for the frames made from the whole ras
     
     def __init__(self, in_ras, in_sizeX, in_sizeY, in_ratio,in_classification): #inputs: main raster, frame size (5m x 10m), ratio (80%), and desired classification (weeds).
         self.__inras = in_ras
-        self.__frameX = in_sizeX
-        self.__frameY = in_sizeY
-        self.__frame_ratio = in_ratio
+        self.__frameX = float(in_sizeX)
+        self.__frameY = float(in_sizeY)
+        self.__frame_ratio = float(in_ratio)
         self.__in_class = in_classification
         self.__max_y = arcpy.GetRasterProperties_management(in_ras, "TOP")
         self.__min_y = arcpy.GetRasterProperties_management(in_ras, "BOTTOM")
@@ -69,17 +69,19 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 		
 def density(inras, ratio, classification): #added the needed inputs
-	my_items = collections.defaultdict(set)
-	for row in cur1:
-		id = row.getValue(CaseField)
-		value = row.getValue(ReadFromField)
-		my_items[id].add(value)
-
-
-	total = sum(my_items.values())
+	fc = inras #Determines file path from user input
+	field = User_Field_Count #Determines pixel count field from user input
+	cursor = arcpy.SearchCursor(fc)
+	for row in cursor: #Calculates sum of all pixel counts
+    		total = sum(row.getValue(field)) 
+	
 	dicts = {}
-	n = 1
-	for i in my_items.values:
-		dicts[n] = values[i / total]
-		n += 1
-	print(dicts) #edit this to a return statement (true/false) based on the input classification as the index and the ratio for the logic
+    	for i in Class_List:#Populates dictionary with key as class and value as count
+        	dicts[User_Field] = values[User_Field_Count]
+	
+	final_ratio = float(dicts[User_Class])/float(total) #Calculates ratio for user input classification
+	
+	if final_ratio >= ratio: 
+		return True, final_ratio #Returns true and final ratio if user input is met
+	else:
+		return False, final_ratio #Returns false and final ratio if user input is not met
