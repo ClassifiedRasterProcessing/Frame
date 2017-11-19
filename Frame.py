@@ -45,7 +45,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
 			x = self.__min_x #set to left bound of in raster
 			while (x < self.__max_x): #"side to side" processing
-				rectangle = str(x) + " " + str(y) + " " + str(x+self.__frame_size) + " " + str(y+self.__frame_size) #bounds of our frame for the clip tool
+				rectangle = str(x) + " " + str(y) + " " + str(x+self.__frameX) + " " + str(y+self.__frameY) #bounds of our frame for the clip tool
 
                 #NEEDS TO BE EDITED. FRAME SHOULD BE A TEMP FILE IN THE SAME WORKSPACE AS THE VALID FRAME FC
 				arcpy.Clip_management(inras,rectangle, frame)#create frame -> clip out a section of the main raster 
