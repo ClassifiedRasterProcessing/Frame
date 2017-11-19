@@ -41,16 +41,16 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		#arcpy.management.AddField("frame_ratio","FRAME_ID","SHORT")
 		cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio"]) #cursor for creating the valid frame feature class
 		
-		y = __min_y #set to bottom of in raster
-		while(y < __max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
-			x = __min_x #set to left bound of in raster
-			while (x < __max_x): #"side to side" processing
-				rectangle = str(x) + " " + str(y) + " " + str(x+__frame_size) + " " + str(y+__frame_size) #bounds of our frame for the clip tool
+		y = self.__min_y #set to bottom of in raster
+		while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
+			x = self.__min_x #set to left bound of in raster
+			while (x < self.__max_x): #"side to side" processing
+				rectangle = str(x) + " " + str(y) + " " + str(x+self.__frame_size) + " " + str(y+self.__frame_size) #bounds of our frame for the clip tool
 
                 #NEEDS TO BE EDITED. FRAME SHOULD BE A TEMP FILE IN THE SAME WORKSPACE AS THE VALID FRAME FC
 				arcpy.Clip_management(inras,rectangle, frame)#create frame -> clip out a section of the main raster 
                 
-				validFrame, validRatio = density(frame, __frame_ratio, __in_class) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
+				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
 				if validFrame: #Case it passes
 					array = arcpy.Array([arcpy.Point(0, 0), arcpy.Point(0, 1000),arcpy.Point(1000, 1000),arcpy.Point(1000, 0)]) #creating the frame polygon
 					polygon = arcpy.Polygon(array)
@@ -59,11 +59,11 @@ class classifiedRaster: #class definition for the frames made from the whole ras
            
 					cursor.insertRow([polygon,vaildRatio]) #add frame to feature class
 
-					x += __frameX #adjust counter for positive condition
+					x += self.__frameX #adjust counter for positive condition
 					continue #back to beginning of while loop
 
-				x += int(__frameX/2)#move half a frame "right"...case when previous frame invalid "Fast option"
-			y += int(__frameY/2)#move half a frame "up" ... "Fast option"
+				x += int(self.__frameX/2)#move half a frame "right"...case when previous frame invalid "Fast option"
+			y += int(self.__frameY/2)#move half a frame "up" ... "Fast option"
 		del cursor #prevent data corruption by deleting cursor when finished
 		
 		
