@@ -18,9 +18,9 @@ class classifiedRaster: #class definition for the frames made from the whole ras
         self.__min_y = arcpy.GetRasterProperties_management(in_ras, "BOTTOM")
         self.__max_x = arcpy.GetRasterProperties_management(in_ras, "RIGHT")
         self.__min_x = arcpy.GetRasterProperties_management(in_ras, "LEFT")
+		
 
-
-   
+		
     def processRaster(self,output):
 		fc = output
 
@@ -31,8 +31,6 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		arcpy.AddMessage(arcpy.Exists(output))
 		arcpy.AddMessage(str(output))
 		
-		
-		
 		arcpy.management.CreateFeatureclass(arcpy.env.workspace,os.path.split(output)[1],"POLYGON")
 
 		R="Ratio"
@@ -41,14 +39,14 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		#arcpy.management.AddField("frame_ratio","FRAME_ID","SHORT")
 		cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio"]) #cursor for creating the valid frame feature class
 		
-		y = self.__min_y #set to bottom of in raster
+		y = self.__min_y.getOutput(0) #set to bottom of in raster
 		while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
-			x = self.__min_x #set to left bound of in raster
+			x = self.__min_x.getOutput(0) #set to left bound of in raster
 			while (x < self.__max_x): #"side to side" processing
-				rectangle = str(x) + " " + str(y) + " " + str(float(x)+float(self.__frameX)) + " " + str(float(y)+float(self.__frameY)) #bounds of our frame for the clip tool
+				rectangle = x + " " + y + " " + x + str(self.__frameX) + " " + y + str(self.__frameY) #bounds of our frame for the clip tool
 
                 #NEEDS TO BE EDITED. FRAME SHOULD BE A TEMP FILE IN THE SAME WORKSPACE AS THE VALID FRAME FC
-				arcpy.Clip_management(inras,rectangle, frame)#create frame -> clip out a section of the main raster 
+				arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
                 
 				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
 				if validFrame: #Case it passes
@@ -63,8 +61,6 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 					continue #back to beginning of while loop
 
 				x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
-			arcpy.AddMessage(__min_y)
-			arcpy.AddMessage(y)
 			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"
 		del cursor #prevent data corruption by deleting cursor when finished
 		
