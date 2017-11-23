@@ -3,9 +3,6 @@
 
 import arcpy, collections ,os
 
-
-
-
 class classifiedRaster: #class definition for the frames made from the whole raster
     
     def __init__(self, in_ras, in_sizeX, in_sizeY, in_ratio,in_classification): #inputs: main raster, frame size (5m x 10m), ratio (80%), and desired classification (weeds).
@@ -14,10 +11,10 @@ class classifiedRaster: #class definition for the frames made from the whole ras
         self.__frameY = float(in_sizeY)
         self.__frame_ratio = float(in_ratio)
         self.__in_class = in_classification
-        self.__max_y = arcpy.GetRasterProperties_management(in_ras, "TOP")
-        self.__min_y = arcpy.GetRasterProperties_management(in_ras, "BOTTOM")
-        self.__max_x = arcpy.GetRasterProperties_management(in_ras, "RIGHT")
-        self.__min_x = arcpy.GetRasterProperties_management(in_ras, "LEFT")
+        self.__max_y = arcpy.GetRasterProperties_management(in_ras, "TOP").getOutput(0)
+        self.__min_y = arcpy.GetRasterProperties_management(in_ras, "BOTTOM").getOutput(0)
+        self.__max_x = arcpy.GetRasterProperties_management(in_ras, "RIGHT").getOutput(0)
+        self.__min_x = arcpy.GetRasterProperties_management(in_ras, "LEFT").getOutput(0)
 		
 
 		
@@ -39,10 +36,10 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		#arcpy.management.AddField("frame_ratio","FRAME_ID","SHORT")
 		cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio"]) #cursor for creating the valid frame feature class
 		
-		y = self.__min_y.getOutput(0) #set to bottom of in raster
-		while(y < self.__max_y.getOutput(0)):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
-			x = self.__min_x.getOutput(0) #set to left bound of in raster
-			while (x < self.__max_x.getOutput(0)): #"side to side" processing
+		y = self.__min_y #set to bottom of in raster
+		while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
+			x = self.__min_x #set to left bound of in raster
+			while (x < self.__max_x): #"side to side" processing
 				rectangle = x + " " + y + " " + x + str(self.__frameX) + " " + y + str(self.__frameY) #bounds of our frame for the clip tool
 
                 #NEEDS TO BE EDITED. FRAME SHOULD BE A TEMP FILE IN THE SAME WORKSPACE AS THE VALID FRAME FC
