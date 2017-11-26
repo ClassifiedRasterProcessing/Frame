@@ -19,6 +19,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 
 		
     def processRaster(self,output):
+		arcpy.AddMessage("Processing raster.")
 		fc = output
 
 		arcpy.env.overwriteOutput = True
@@ -29,7 +30,9 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		arcpy.AddMessage(str(output))
 		
 		arcpy.management.CreateFeatureclass(arcpy.env.workspace,os.path.split(output)[1],"POLYGON")
-
+		frame = arcpy.env.workspace + "TempClip"#defining the location where the temporary frame will be saved
+		#may need a \\ before temp
+		
 		R="Ratio"
 		F="FLOAT"
 		arcpy.management.AddField(fc,R,F)
@@ -42,11 +45,12 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 			while (x < self.__max_x): #"side to side" processing
 				rectangle = x + " " + y + " " + x + str(self.__frameX) + " " + y + str(self.__frameY) #bounds of our frame for the clip tool
 
-                #NEEDS TO BE EDITED. FRAME SHOULD BE A TEMP FILE IN THE SAME WORKSPACE AS THE VALID FRAME FC
 				arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
-                
+                		arcpy.AddMessage("Frame created.")
+				
 				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
 				if validFrame: #Case it passes
+					arcpy.AddMessage("Valid frame found.")
 					array = arcpy.Array([arcpy.Point(0, 0), arcpy.Point(0, 1000),arcpy.Point(1000, 1000),arcpy.Point(1000, 0)]) #creating the frame polygon
 					polygon = arcpy.Polygon(array)
 					vaildRatio= 1
@@ -64,6 +68,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 		
 def density(inras, ratio, classification): #added the needed inputs
+	arcpy.AddMessage("Processing frame.")
 	fc = inras #Determines file path from user input
 	field = User_Field_Count #Determines pixel count field from user input
 	cursor = arcpy.SearchCursor(fc)
@@ -75,7 +80,7 @@ def density(inras, ratio, classification): #added the needed inputs
         	dicts[User_Field] = values[User_Field_Count]
 	
 	final_ratio = float(dicts[User_Class])/float(total) #Calculates ratio for user input classification
-	
+	arcpy.AddMessage("Frame has density " + str(ratio))
 	if final_ratio >= ratio: 
 		return True, final_ratio #Returns true and final ratio if user input is met
 	else:
