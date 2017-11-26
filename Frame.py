@@ -24,10 +24,10 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 
 		arcpy.env.overwriteOutput = True
 
-		arcpy.AddMessage(str(arcpy.env.workspace) +"  "+ str(os.path.split(output)[1]))
-		arcpy.AddMessage(str(fc))
-		arcpy.AddMessage(arcpy.Exists(output))
-		arcpy.AddMessage(str(output))
+		#arcpy.AddMessage(str(arcpy.env.workspace) +"  "+ str(os.path.split(output)[1]))
+		#arcpy.AddMessage(str(fc))
+		#arcpy.AddMessage(arcpy.Exists(output))
+		#arcpy.AddMessage(str(output))
 		
 		arcpy.management.CreateFeatureclass(arcpy.env.workspace,os.path.split(output)[1],"POLYGON")
 		frame = arcpy.env.workspace + "TempClip"#defining the location where the temporary frame will be saved
@@ -38,13 +38,14 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		arcpy.management.AddField(fc,R,F)
 		#arcpy.management.AddField("frame_ratio","FRAME_ID","SHORT")
 		cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio"]) #cursor for creating the valid frame feature class
-		
+		arcpy.AddMessage("Passed the curor")
 		y = self.__min_y #set to bottom of in raster
 		while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
 			x = self.__min_x #set to left bound of in raster
+			arcpy.AddMessage("Passed 1 while")
 			while (x < self.__max_x): #"side to side" processing
+				arcpy.AddMessage("Passed 2 while")
 				rectangle = x + " " + y + " " + x + str(self.__frameX) + " " + y + str(self.__frameY) #bounds of our frame for the clip tool
-
 				arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
                 		arcpy.AddMessage("Frame created.")
 				
@@ -85,3 +86,5 @@ def density(inras, ratio, classification): #added the needed inputs
 		return True, final_ratio #Returns true and final ratio if user input is met
 	else:
 		return False, final_ratio #Returns false and final ratio if user input is not met
+
+	
