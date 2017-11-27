@@ -30,7 +30,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		#arcpy.AddMessage(str(output))
 		
 		arcpy.management.CreateFeatureclass(arcpy.env.workspace,os.path.split(output)[1],"POLYGON")
-		frame = arcpy.env.workspace + "TempClip"#defining the location where the temporary frame will be saved
+		frame = "TempClip"#defining the location where the temporary frame will be saved       might need arcpy.env.workspace + 
 		#may need a \\ before temp
 		
 		R="Ratio"
