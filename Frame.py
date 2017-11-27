@@ -11,10 +11,10 @@ class classifiedRaster: #class definition for the frames made from the whole ras
         self.__frameY = float(in_sizeY)
         self.__frame_ratio = float(in_ratio)
         self.__in_class = in_classification
-        self.__max_y = arcpy.GetRasterProperties_management(in_ras, "TOP").getOutput(0)
-        self.__min_y = arcpy.GetRasterProperties_management(in_ras, "BOTTOM").getOutput(0)
-        self.__max_x = arcpy.GetRasterProperties_management(in_ras, "RIGHT").getOutput(0)
-        self.__min_x = arcpy.GetRasterProperties_management(in_ras, "LEFT").getOutput(0)
+        self.__max_y = float(arcpy.GetRasterProperties_management(in_ras, "TOP").getOutput(0))
+        self.__min_y = float(arcpy.GetRasterProperties_management(in_ras, "BOTTOM").getOutput(0))
+        self.__max_x = float(arcpy.GetRasterProperties_management(in_ras, "RIGHT").getOutput(0))
+        self.__min_x = float(arcpy.GetRasterProperties_management(in_ras, "LEFT").getOutput(0))
 		
 
 		
@@ -39,17 +39,18 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		#arcpy.management.AddField("frame_ratio","FRAME_ID","SHORT")
 		cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio"]) #cursor for creating the valid frame feature class
 		arcpy.AddMessage("Passed the cursor")
-		y = self.__min_y #set to bottom of in raster
+		y = float(self.__min_y) #set to bottom of in raster
 		arcpy.AddMessage("y = " +str(y))
 		arcpy.AddMessage("max Y = " +str(self.__max_y))
-		while(float(y) < float(self.__max_y)):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
-			x = self.__min_x #set to left bound of in raster
+		while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
+			x = float(self.__min_x) #set to left bound of in raster
 			arcpy.AddMessage("Passed 1 while")
 			arcpy.AddMessage("x = " +str(x))
 			arcpy.AddMessage("max X = " +str(self.__max_x))
-			while (float(x) < float(self.__max_x)): #"side to side" processing
+			while (x < self.__max_x): #"side to side" processing
 				arcpy.AddMessage("Passed 2 while")
-				rectangle = x + " " + y + " " + x + str(self.__frameX) + " " + y + str(self.__frameY) #bounds of our frame for the clip tool
+				rectangle = str(x) + " " + str(y) + " " + str(x + self.__frameX) + " " + str(y + self.__frameY) #bounds of our frame for the clip tool
+				arcpy.AddMessage("Current rectangle: " + str(rectangle))
 				arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
                 		arcpy.AddMessage("Frame created.")
 				
