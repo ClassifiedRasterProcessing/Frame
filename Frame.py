@@ -38,12 +38,14 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		arcpy.management.AddField(fc,R,F)
 		#arcpy.management.AddField("frame_ratio","FRAME_ID","SHORT")
 		cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio"]) #cursor for creating the valid frame feature class
-		arcpy.AddMessage("Passed the curor")
+		arcpy.AddMessage("Passed the cursor")
 		y = self.__min_y #set to bottom of in raster
-		while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
+		arcpy.AddMessage("y = " +str(y))
+		arcpy.AddMessage("maxY = " +str(self.__max_y))
+		while(float(y) < float(self.__max_y)):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
 			x = self.__min_x #set to left bound of in raster
 			arcpy.AddMessage("Passed 1 while")
-			while (x < self.__max_x): #"side to side" processing
+			while (float(x) < float(self.__max_x)): #"side to side" processing
 				arcpy.AddMessage("Passed 2 while")
 				rectangle = x + " " + y + " " + x + str(self.__frameX) + " " + y + str(self.__frameY) #bounds of our frame for the clip tool
 				arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
@@ -88,3 +90,4 @@ def density(inras, ratio, classification): #added the needed inputs
 		return False, final_ratio #Returns false and final ratio if user input is not met
 
 	
+    
