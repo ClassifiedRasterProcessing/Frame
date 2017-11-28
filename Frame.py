@@ -90,27 +90,29 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 	arcpy.BuildRasterAttributeTable_management(fc, "Overwrite") #updates attribute table to reflect frame, rather than whole
 	#F="FLOAT"
 	#arcpy.management.AddField(fc,field,F) #creating attribute table to store frequencies in
-	cursor = arcpy.SearchCursor(fc)
+	cursor = arcpy.SearchCursor(fc,Fields_List)
 	
 	frequency = 0
 	total = 0
-	CountColumn = 0
-	ValueColumn = 0
-	i = 0
-	for column in Fields_List: #determines which column contains the counts for data retrieval
-		if column == User_Field_Count:
-			CountColumn = i
-		if column == User_Field_Value:
-			ValueColumn = i
-		i += 1	
+	#CountColumn = 0
+	#ValueColumn = 0
+	#i = 0
+	#for column in Fields_List: #determines which column contains the counts for data retrieval
+	#	if column == User_Field_Count:
+	#		CountColumn = i
+	#	if column == User_Field_Value:
+	#		ValueColumn = i
+	#	i += 1	
 	
 	for row in cursor: #Calculates information on each classification
-		arcpy.AddMessage("inclass = " + str(inclass))	
-		arcpy.AddMessage("row[ValueColumn] = " + str(row[ValueColumn]))
+		arcpy.AddMessage("inclass = " + str(inclass))
+		arcpy.AddMessage("row.getValue(ValueColumn) = " + str(row.getValue(ValueColumn)))
+		#arcpy.AddMessage("row[ValueColumn] = " + str(row[ValueColumn]))
 		try:
-			if row[ValueColumn] == inclass: #calc frequency of the classification requested
-				frequency = row[CountColumn]	
-			total += row[CountColumn]  #calc sum
+			#if row[ValueColumn] == inclass: #calc frequency of the classification requested
+			if row.getValue(ValueColumn) == inclass: #calc frequency of the classification requested
+				frequency = row.getValue(User_Field_Count)
+			total += row.getValue(User_Field_Count)  #calc sum
 		except:
 			arcpy.AddMessage("Not in frame.")
 			return False, 0
