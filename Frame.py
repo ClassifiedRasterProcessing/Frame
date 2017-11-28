@@ -75,6 +75,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 def density(inras, ratio, classification, User_Field_Count): #added the needed inputs
 	arcpy.AddMessage("Processing frame.")
+	arcpy.AddMessage("fc = " + str(fc))
 	fc = inras #Determines file path from user input
 	field = User_Field_Count #Determines pixel count field from user input
 	cursor = arcpy.SearchCursor(fc)
