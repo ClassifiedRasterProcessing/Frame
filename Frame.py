@@ -110,7 +110,7 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 		#arcpy.AddMessage("row[ValueColumn] = " + str(row[ValueColumn]))
 		try:
 			#if row[ValueColumn] == inclass: #calc frequency of the classification requested
-			if row.getValue(ValueColumn) == inclass: #calc frequency of the classification requested
+			if row.getValue(User_Field_Value) == inclass: #calc frequency of the classification requested
 				frequency = row.getValue(User_Field_Count)
 			total += row.getValue(User_Field_Count)  #calc sum
 		except:
