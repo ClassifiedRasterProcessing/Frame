@@ -83,7 +83,7 @@ def density(inras, ratio, classification, User_Field_Count): #added the needed i
 	arcpy.management.AddField(fc,field,F) #creating attribute table to store frequencies in
 	cursor = arcpy.SearchCursor(fc)
 	for row in cursor: #Calculates sum of all pixel counts
-    		total = sum(row.getValue(field)) 
+    		total += row.getValue(field) 
 	
 	dicts = {}
     	for i in Class_List:#Populates dictionary with key as class and value as count
