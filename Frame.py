@@ -91,8 +91,6 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 			frequency = row.getValue(countField)		
     		total += row.getValue(countField)  #calc sum
 	
-
-	
 	final_ratio = float(frequency)/float(total) #Calculates ratio for user input classification
 	arcpy.AddMessage("Frame has density " + str(ratio))
 	if final_ratio >= ratio: 
