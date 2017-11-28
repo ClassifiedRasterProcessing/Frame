@@ -38,25 +38,32 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		arcpy.management.AddField(fc,R,F)
 		#arcpy.management.AddField("frame_ratio","FRAME_ID","SHORT")
 		cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio"]) #cursor for creating the valid frame feature class
-		arcpy.AddMessage("Passed the cursor")
+		#arcpy.AddMessage("Passed the cursor")
 		y = float(self.__min_y) #set to bottom of in raster
-		arcpy.AddMessage("y = " +str(y))
-		arcpy.AddMessage("max Y = " +str(self.__max_y))
+		
+		frameCount = 0 #some nice counters for output while prcessing
+		validFrameCount = 0
+		totalFrames = int((self.__max_y-self.__min_y)/self.__frameY) * (self.__max_x-self.__min_x)/self.__framex)
+		
+		#arcpy.AddMessage("y = " +str(y))
+		#arcpy.AddMessage("max Y = " +str(self.__max_y))
 		while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
 			x = float(self.__min_x) #set to left bound of in raster
-			arcpy.AddMessage("Passed 1 while")
-			arcpy.AddMessage("x = " +str(x))
-			arcpy.AddMessage("max X = " +str(self.__max_x))
+			#arcpy.AddMessage("Passed 1 while")
+			#arcpy.AddMessage("x = " +str(x))
+			#arcpy.AddMessage("max X = " +str(self.__max_x))
 			while (x < self.__max_x): #"side to side" processing
-				arcpy.AddMessage("Passed 2 while")
+				#arcpy.AddMessage("Passed 2 while")
 				rectangle = str(x) + " " + str(y) + " " + str(x + self.__frameX) + " " + str(y + self.__frameY) #bounds of our frame for the clip tool
-				arcpy.AddMessage("Current rectangle: " + str(rectangle))
+				#arcpy.AddMessage("Current rectangle: " + str(rectangle))
 				arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
-                		arcpy.AddMessage("Frame created.")
+                		frameCount += 1
+				arcpy.AddMessage("Processing frame #" + str(frameCount) + " out of " + str(totalFrames))
 				
 				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count, Class_List, User_Field) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
 				if validFrame: #Case it passes
-					arcpy.AddMessage("Valid frame found.")
+					arcpy.AddMessage("Valid frame.")
+					validFrameCount += 1
 					array = arcpy.Array([arcpy.Point(0, 0), arcpy.Point(0, 1000),arcpy.Point(1000, 1000),arcpy.Point(1000, 0)]) #creating the frame polygon
 					polygon = arcpy.Polygon(array)
 					vaildRatio= 1
@@ -70,13 +77,14 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 				x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
 			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"
 		del cursor #prevent data corruption by deleting cursor when finished
+		arcpy.AddMessage("Finished processing raster. " + str(validFrameCount) + " valid frames found.")
 		
 		
 		
 def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Value): #added the needed inputs
 	fc = inras #Determines file path from user input
-	arcpy.AddMessage("Processing frame.")
-	arcpy.AddMessage("fc = " + str(fc))
+	#arcpy.AddMessage("Processing frame.")
+	#arcpy.AddMessage("fc = " + str(fc))
 	
 	countField= User_Field_Count
 	arcpy.BuildRasterAttributeTable_management(fc, "Overwrite") #updates attribute table to reflect frame, rather than whole
