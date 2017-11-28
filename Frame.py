@@ -112,7 +112,9 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 			#if row[ValueColumn] == inclass: #calc frequency of the classification requested
 			if row.getValue(User_Field_Value) == inclass: #calc frequency of the classification requested
 				frequency = row.getValue(User_Field_Count)
+				arcpy.AddMessage("Frequency = " + str(row.getValue(User_Field_Count)))
 			total += row.getValue(User_Field_Count)  #calc sum
+			arcpy.AddMessage("Total = " + str(row.getValue(User_Field_Count)))
 		except:
 			arcpy.AddMessage("Not in frame.")
 			return False, 0
