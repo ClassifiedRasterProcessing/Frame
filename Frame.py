@@ -96,7 +96,7 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 	total = 0
 	for row in cursor: #Calculates information on each classification
 		try:
-			if User_Field_Value == row.getValue(inclass): #calc frequency of the classification requested
+			if User_Field_Value == inclass: #calc frequency of the classification requested
 				frequency = row.getValue(countField)		
 			total += row.getValue(countField)  #calc sum
 		except:
