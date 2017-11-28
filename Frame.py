@@ -45,7 +45,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 		frameCount = 0 #some nice counters for output while prcessing
 		validFrameCount = 0
-		totalFrames = int(((self.__max_y-self.__min_y)/self.__frameY) * ((self.__max_x-self.__min_x)/self.__frameX))
+		totalFrames = int(((self.__max_y-self.__min_y)/self.__frameY//2) * ((self.__max_x-self.__min_x)/self.__frameX//2))
 		
 		#arcpy.AddMessage("y = " +str(y))
 		#arcpy.AddMessage("max Y = " +str(self.__max_y))
