@@ -106,7 +106,7 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 	
 	for row in cursor: #Calculates information on each classification
 		arcpy.AddMessage("inclass = " + str(inclass))
-		arcpy.AddMessage("row.getValue(ValueColumn) = " + str(row.getValue(ValueColumn)))
+		arcpy.AddMessage("row.getValue(User_Field_Value) = " + str(row.getValue(User_Field_Value)))
 		#arcpy.AddMessage("row[ValueColumn] = " + str(row[ValueColumn]))
 		try:
 			#if row[ValueColumn] == inclass: #calc frequency of the classification requested
