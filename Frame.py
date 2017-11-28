@@ -100,7 +100,8 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 				frequency = row.getValue(countField)		
 			total += row.getValue(countField)  #calc sum
 		except:
-	
+			arcpy.AddMessage("Not in frame.")
+			return False, 0
 	if total == 0: #preventing dividing by 0, case where there is nothing in the frame
 		arcpy.AddMessage("Frame empty.")
 		return False, 0
