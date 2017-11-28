@@ -95,9 +95,11 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 	frequency = 0
 	total = 0
 	for row in cursor: #Calculates information on each classification
-		if User_Field_Value == row.getValue(inclass): #calc frequency of the classification requested
-			frequency = row.getValue(countField)		
-    		total += row.getValue(countField)  #calc sum
+		try:
+			if User_Field_Value == row.getValue(inclass): #calc frequency of the classification requested
+				frequency = row.getValue(countField)		
+			total += row.getValue(countField)  #calc sum
+		except:
 	
 	if total == 0: #preventing dividing by 0, case where there is nothing in the frame
 		arcpy.AddMessage("Frame empty.")
