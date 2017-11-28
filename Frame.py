@@ -60,7 +60,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
                 		frameCount += 1
 				arcpy.AddMessage("Processing frame #" + str(frameCount) + " out of " + str(totalFrames))
 				
-				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count, Class_List, User_Field) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
+				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count, Class_List, User_Field, Fields_List) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
 				if validFrame: #Case it passes
 					arcpy.AddMessage("Valid frame.")
 					validFrameCount += 1
@@ -81,7 +81,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 		
 		
-def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Value): #added the needed inputs
+def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Value,Fields_List): #added the needed inputs
 	fc = inras #Determines file path from user input
 	#arcpy.AddMessage("Processing frame.")
 	#arcpy.AddMessage("fc = " + str(fc))
@@ -90,7 +90,7 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 	arcpy.BuildRasterAttributeTable_management(fc, "Overwrite") #updates attribute table to reflect frame, rather than whole
 	#F="FLOAT"
 	#arcpy.management.AddField(fc,field,F) #creating attribute table to store frequencies in
-	cursor = arcpy.da.SearchCursor(fc)
+	cursor = arcpy.da.SearchCursor(fc,Fields_List)
 	
 	frequency = 0
 	total = 0
