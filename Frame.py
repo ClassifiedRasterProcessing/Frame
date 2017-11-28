@@ -36,6 +36,8 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		R="Ratio"
 		F="FLOAT"
 		arcpy.management.AddField(fc,R,F)
+		arcpy.management.AddField(fc,"Longitude",F)
+		arcpy.management.AddField(fc,"Latitude",F)
 		#arcpy.management.AddField("frame_ratio","FRAME_ID","SHORT")
 		projection = arcpy.Describe(self.__inras).spatialReference
 		arcpy.DefineProjection_management(fc,projection)
@@ -69,7 +71,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 					array = arcpy.Array([arcpy.Point(x, y), arcpy.Point(x, y + self.__frameY),arcpy.Point(x + self.__frameX, y + self.__frameY),arcpy.Point(x + self.__frameX, y)]) #creating the frame polygon
 					polygon = arcpy.Polygon(array)
 		          
-					cursor.insertRow([polygon,validRatio]) #add frame to feature class
+					cursor.insertRow([polygon,validRatio,y + self.__frameY/2,x + self.__frameX]) #add frame to feature class
 
 					x += self.__frameX #adjust counter for positive condition
 					continue #back to beginning of while loop
