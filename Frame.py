@@ -103,7 +103,8 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 		if column == User_Field_Value:
 			ValueColumn = i
 		i += 1	
-			
+	arcpy.AddMessage("inclass = " + str(inclass))	
+	arcpy.AddMessage("row[ValueColumn] = " + str(row[ValueColumn]))
 	for row in cursor: #Calculates information on each classification
 		
 		try:
