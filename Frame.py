@@ -77,7 +77,10 @@ def density(inras, ratio, classification, User_Field_Count): #added the needed i
 	arcpy.AddMessage("Processing frame.")
 	arcpy.AddMessage("fc = " + str(fc))
 	fc = inras #Determines file path from user input
-	field = User_Field_Count #Determines pixel count field from user input
+	
+	field="Ratio"
+	F="FLOAT"
+	arcpy.management.AddField(fc,field,F) #creating attribute table to store frequencies in
 	cursor = arcpy.SearchCursor(fc)
 	for row in cursor: #Calculates sum of all pixel counts
     		total = sum(row.getValue(field)) 
