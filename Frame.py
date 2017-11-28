@@ -69,7 +69,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 					array = arcpy.Array([arcpy.Point(0, 0), arcpy.Point(0, 1000),arcpy.Point(1000, 1000),arcpy.Point(1000, 0)]) #creating the frame polygon
 					polygon = arcpy.Polygon(array)
 		          
-					cursor.insertRow([polygon,vaildRatio]) #add frame to feature class
+					cursor.insertRow([polygon,validRatio]) #add frame to feature class
 
 					x += self.__frameX #adjust counter for positive condition
 					continue #back to beginning of while loop
