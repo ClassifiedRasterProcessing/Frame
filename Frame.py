@@ -18,7 +18,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 
 		
-    def processRaster(self,output, User_Field_Count):
+    def processRaster(self,output, User_Field_Count, Class_List):
 		arcpy.AddMessage("Processing raster.")
 		fc = output
 
@@ -54,7 +54,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 				arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
                 		arcpy.AddMessage("Frame created.")
 				
-				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
+				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count, Class_List) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
 				if validFrame: #Case it passes
 					arcpy.AddMessage("Valid frame found.")
 					array = arcpy.Array([arcpy.Point(0, 0), arcpy.Point(0, 1000),arcpy.Point(1000, 1000),arcpy.Point(1000, 0)]) #creating the frame polygon
@@ -73,7 +73,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 		
 		
-def density(inras, ratio, classification, User_Field_Count): #added the needed inputs
+def density(inras, ratio, classification, User_Field_Count, Class_List): #added the needed inputs
 	arcpy.AddMessage("Processing frame.")
 	arcpy.AddMessage("fc = " + str(fc))
 	fc = inras #Determines file path from user input
