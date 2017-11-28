@@ -74,10 +74,9 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 		
 def density(inras, ratio, classification, User_Field_Count, Class_List): #added the needed inputs
+	fc = inras #Determines file path from user input
 	arcpy.AddMessage("Processing frame.")
 	arcpy.AddMessage("fc = " + str(fc))
-	fc = inras #Determines file path from user input
-	
 	field= User_Field_Count#"Ratio"
 	arcpy.BuildRasterAttributeTable_management(fc, "Overwrite") #updates attribute table to reflect frame, rather than whole
 	#F="FLOAT"
