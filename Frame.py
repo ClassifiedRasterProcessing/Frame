@@ -90,7 +90,7 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 	arcpy.BuildRasterAttributeTable_management(fc, "Overwrite") #updates attribute table to reflect frame, rather than whole
 	#F="FLOAT"
 	#arcpy.management.AddField(fc,field,F) #creating attribute table to store frequencies in
-	cursor = arcpy.SearchCursor(fc)
+	cursor = arcpy.da.SearchCursor(fc)
 	
 	frequency = 0
 	total = 0
