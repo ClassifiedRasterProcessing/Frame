@@ -43,7 +43,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 		frameCount = 0 #some nice counters for output while prcessing
 		validFrameCount = 0
-		totalFrames = int((self.__max_y-self.__min_y)/self.__frameY) * (self.__max_x-self.__min_x)/self.__framex)
+		totalFrames = int(((self.__max_y-self.__min_y)/self.__frameY) * ((self.__max_x-self.__min_x)/self.__frameX))
 		
 		#arcpy.AddMessage("y = " +str(y))
 		#arcpy.AddMessage("max Y = " +str(self.__max_y))
@@ -100,7 +100,7 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
     		total += row.getValue(countField)  #calc sum
 	
 	if total == 0: #preventing dividing by 0, case where there is nothing in the frame
-		rcpy.AddMessage("Frame empty.")
+		arcpy.AddMessage("Frame empty.")
 		return False, 0
 	
 	final_ratio = float(frequency)/float(total) #Calculates ratio for user input classification
