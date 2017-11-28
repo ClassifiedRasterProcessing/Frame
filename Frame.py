@@ -73,7 +73,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 		
 		
-def density(inras, ratio, classification, User_Field_Count, Class_List): #added the needed inputs
+def density(inras, ratio, User_Field, User_Field_Count, Class_List): #added the needed inputs
 	fc = inras #Determines file path from user input
 	arcpy.AddMessage("Processing frame.")
 	arcpy.AddMessage("fc = " + str(fc))
@@ -86,8 +86,8 @@ def density(inras, ratio, classification, User_Field_Count, Class_List): #added 
     		total += row.getValue(field) 
 	
 	dicts = {}
-    	for i in Class_List:#Populates dictionary with key as class and value as count
-        	dicts[User_Field] = values[User_Field_Count]
+    	for class in Class_List:#Populates dictionary with key as class and value as count
+        	dicts[User_Field] = User_Field_Count[class]
 	
 	final_ratio = float(dicts[User_Class])/float(total) #Calculates ratio for user input classification
 	arcpy.AddMessage("Frame has density " + str(ratio))
