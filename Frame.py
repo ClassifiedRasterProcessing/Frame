@@ -18,7 +18,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 
 		
-    def processRaster(self,output, User_Field_Count, Class_List):
+    def processRaster(self,output, User_Field_Count, Class_List, User_Field):
 		arcpy.AddMessage("Processing raster.")
 		fc = output
 
@@ -54,7 +54,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 				arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
                 		arcpy.AddMessage("Frame created.")
 				
-				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count, Class_List) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
+				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count, Class_List, User_Field) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
 				if validFrame: #Case it passes
 					arcpy.AddMessage("Valid frame found.")
 					array = arcpy.Array([arcpy.Point(0, 0), arcpy.Point(0, 1000),arcpy.Point(1000, 1000),arcpy.Point(1000, 0)]) #creating the frame polygon
@@ -73,21 +73,27 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 		
 		
-def density(inras, ratio, User_Field, User_Field_Count, Class_List): #added the needed inputs
+def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Value): #added the needed inputs
 	fc = inras #Determines file path from user input
 	arcpy.AddMessage("Processing frame.")
 	arcpy.AddMessage("fc = " + str(fc))
-	field= User_Field_Count#"Ratio"
+	
+	countField= User_Field_Count
 	arcpy.BuildRasterAttributeTable_management(fc, "Overwrite") #updates attribute table to reflect frame, rather than whole
 	#F="FLOAT"
 	#arcpy.management.AddField(fc,field,F) #creating attribute table to store frequencies in
 	cursor = arcpy.SearchCursor(fc)
-	for row in cursor: #Calculates sum of all pixel counts
-    		total += row.getValue(field) 
+	
+	frequency = 0
+	total = 0
+	for row in cursor: #Calculates information on each classification
+		if User_Field_Value == row.getValue(inclass): #calc frequency of the classification requested
+			frequency = row.getValue(countField)		
+    		total += row.getValue(countField)  #calc sum
 	
 	dicts = {}
     	for class in Class_List:#Populates dictionary with key as class and value as count
-        	dicts[User_Field] = User_Field_Count[class]
+        	dicts[inclass] = User_Field_Count[class]
 	
 	final_ratio = float(dicts[User_Class])/float(total) #Calculates ratio for user input classification
 	arcpy.AddMessage("Frame has density " + str(ratio))
