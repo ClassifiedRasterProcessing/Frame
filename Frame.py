@@ -18,7 +18,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 
 		
-    def processRaster(self,output, User_Field_Count, Class_List, User_Field):
+    def processRaster(self,output, User_Field_Count, Class_List, User_Field, Fields_List):
 		arcpy.AddMessage("Processing raster.")
 		fc = output
 
