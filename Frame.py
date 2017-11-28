@@ -41,7 +41,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		#arcpy.management.AddField("frame_ratio","FRAME_ID","SHORT")
 		projection = arcpy.Describe(self.__inras).spatialReference
 		arcpy.DefineProjection_management(fc,projection)
-		cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio"]) #cursor for creating the valid frame feature class
+		cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio","X","Y"]) #cursor for creating the valid frame feature class
 		#arcpy.AddMessage("Passed the cursor")
 		y = float(self.__min_y) #set to bottom of in raster
 		
