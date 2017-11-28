@@ -114,7 +114,7 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 				frequency = long(row.getValue(User_Field_Count))
 				arcpy.AddMessage("Frequency = " + str(row.getValue(User_Field_Count)))
 			total += long(row.getValue(User_Field_Count)) #calc sum
-			arcpy.AddMessage("Total = " + str(row.getValue(User_Field_Count)))
+			arcpy.AddMessage("Total = " + str(total))
 		except:
 			arcpy.AddMessage("Not in frame.")
 			return False, 0
