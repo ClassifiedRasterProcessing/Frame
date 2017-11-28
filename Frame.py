@@ -79,6 +79,7 @@ def density(inras, ratio, classification, User_Field_Count): #added the needed i
 	fc = inras #Determines file path from user input
 	
 	field= User_Field_Count#"Ratio"
+	arcpy.BuildRasterAttributeTable_management(fc, "Overwrite") #updates attribute table to reflect frame, rather than whole
 	#F="FLOAT"
 	#arcpy.management.AddField(fc,field,F) #creating attribute table to store frequencies in
 	cursor = arcpy.SearchCursor(fc)
