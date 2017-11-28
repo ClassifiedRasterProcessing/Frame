@@ -95,16 +95,19 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 	frequency = 0
 	total = 0
 	CountColumn = 0
+	ValueColumn = 0
 	i = 0
-	for column in Fields_List:
+	for column in Fields_List: #determines which column contains the counts for data retrieval
 		if column == User_Field_Count:
 			CountColumn = i
+		if column == User_Field_Value:
+			ValueColumn = i
 		i += 1	
 			
 	for row in cursor: #Calculates information on each classification
 		
 		try:
-			if User_Field_Value == inclass: #calc frequency of the classification requested
+			if row[ValueColumn] == inclass: #calc frequency of the classification requested
 				frequency = row[CountColumn]	
 			total += row[CountColumn]  #calc sum
 		except:
