@@ -37,6 +37,8 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		F="FLOAT"
 		arcpy.management.AddField(fc,R,F)
 		#arcpy.management.AddField("frame_ratio","FRAME_ID","SHORT")
+		projection = arcpy.Describe(self.__inras).spatialReference
+		arcpy.DefineProjection_management(fc,projection)
 		cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio"]) #cursor for creating the valid frame feature class
 		#arcpy.AddMessage("Passed the cursor")
 		y = float(self.__min_y) #set to bottom of in raster
@@ -66,9 +68,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 					validFrameCount += 1
 					array = arcpy.Array([arcpy.Point(0, 0), arcpy.Point(0, 1000),arcpy.Point(1000, 1000),arcpy.Point(1000, 0)]) #creating the frame polygon
 					polygon = arcpy.Polygon(array)
-					vaildRatio= 1
-					#need to somehow add validRatio to the attribute table
-           
+		          
 					cursor.insertRow([polygon,vaildRatio]) #add frame to feature class
 
 					x += self.__frameX #adjust counter for positive condition
@@ -76,6 +76,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 
 				x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
 			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"
+			
 		del cursor #prevent data corruption by deleting cursor when finished
 		arcpy.AddMessage("Finished processing raster. " + str(validFrameCount) + " valid frames found.")
 		
