@@ -100,6 +100,7 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
     		total += row.getValue(countField)  #calc sum
 	
 	if total == 0: #preventing dividing by 0, case where there is nothing in the frame
+		rcpy.AddMessage("Frame empty.")
 		return False, 0
 	
 	final_ratio = float(frequency)/float(total) #Calculates ratio for user input classification
