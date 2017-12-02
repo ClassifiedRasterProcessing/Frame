@@ -20,7 +20,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
     def processRaster(self,output, User_Field_Count, Class_List, User_Field, Fields_List):
 	arcpy.AddMessage("Processing raster.")
-	fc = output
+	fc = output  #this is the path to shapefile made by the user in the tool box
 	arcpy.env.overwriteOutput = True
 
 	#arcpy.AddMessage(str(arcpy.env.workspace) +"  "+ str(os.path.split(output)[1]))
@@ -29,13 +29,13 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 	#arcpy.AddMessage(str(output))
 		
 	arcpy.management.CreateFeatureclass(arcpy.env.workspace,os.path.split(output)[1],"POLYGON")
-	frame = "TempClip"#defining the location where the temporary frame will be saved
+	frame = "TempClip"#defining the location where the temporary frame will be saved for cutting out what we need
 		
-	R="Ratio"
-	F="FLOAT"
+	R="Ratio" #name for field in attribute table
+	F="FLOAT" #data type for attribute table
 	arcpy.management.AddField(fc,R,F) #adding properties to attribute table
-	arcpy.management.AddField(fc,"X",F)
-	arcpy.management.AddField(fc,"Y",F)
+	arcpy.management.AddField(fc,"X",F) #adding properties to attribute table for coordinates for each poygon made
+	arcpy.management.AddField(fc,"Y",F) #adding properties to attribute table for coordinates for each poygon made
 	projection = arcpy.Describe(self.__inras).spatialReference
 	arcpy.DefineProjection_management(fc,projection)
 	cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio","X","Y"]) #cursor for creating the valid frame feature class
@@ -134,6 +134,3 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 		return True, final_ratio #Returns true and final ratio if user input is met
 	else:
 		return False, final_ratio #Returns false and final ratio if user input is not met
-
-	
-    
