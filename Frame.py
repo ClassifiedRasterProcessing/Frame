@@ -36,8 +36,10 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 	arcpy.management.AddField(fc,R,F) #adding properties to attribute table
 	arcpy.management.AddField(fc,"X",F) #adding properties to attribute table for coordinates for each poygon made
 	arcpy.management.AddField(fc,"Y",F) #adding properties to attribute table for coordinates for each poygon made
-	projection = arcpy.Describe(self.__inras).spatialReference
+	
+	projection = arcpy.Describe(self.__inras).spatialReference #Assigning the feature class the same projection as inras
 	arcpy.DefineProjection_management(fc,projection)
+	
 	cursor = arcpy.da.InsertCursor(fc, ["SHAPE@","Ratio","X","Y"]) #cursor for creating the valid frame feature class
 	#arcpy.AddMessage("Passed the cursor")
 	y = float(self.__min_y) #set to bottom of in raster
@@ -45,54 +47,61 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 	frameCount = 0 #some nice counters for output while processing
 	validFrameCount = 0
 	totalFrames = int(((self.__max_y-self.__min_y)/self.__frameY*2+1) * ((self.__max_x-self.__min_x)/self.__frameX*2+1))
-		
-	#arcpy.AddMessage("y = " +str(y))
-	#arcpy.AddMessage("max Y = " +str(self.__max_y))
-	while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
-		x = float(self.__min_x) #set to left bound of in raster
-		#arcpy.AddMessage("Passed 1 while")
-		#arcpy.AddMessage("x = " +str(x))
-		#arcpy.AddMessage("max X = " +str(self.__max_x))
-		while (x < self.__max_x): #"side to side" processing
-			#arcpy.AddMessage("Passed 2 while")
-			rectangle = str(x) + " " + str(y) + " " + str(x + self.__frameX) + " " + str(y + self.__frameY) #bounds of our frame for the clip tool
-			#arcpy.AddMessage("Current rectangle: " + str(rectangle))
-			arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
-               		frameCount += 1 #updating processing counter
-			arcpy.AddMessage("Processing frame #" + str(frameCount) + " out of " + str(totalFrames))
-				
-			validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count, Class_List, User_Field, Fields_List) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
-			if validFrame: #Case it passes
-				arcpy.AddMessage("Valid frame.")
-				validFrameCount += 1
-				array = arcpy.Array([arcpy.Point(x, y), arcpy.Point(x, y + self.__frameY),arcpy.Point(x + self.__frameX, y + self.__frameY),arcpy.Point(x + self.__frameX, y)]) #creating the frame polygon
-				polygon = arcpy.Polygon(array)
-		          	lat = y+self.__frameY/2
-				long = x+self.__frameX/2
-				cursor.insertRow([polygon,validRatio, lat, long]) #add frame to feature class with calculated attributes
+	
+	try:
+		#arcpy.AddMessage("y = " +str(y))
+		#arcpy.AddMessage("max Y = " +str(self.__max_y))
+		while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
+			x = float(self.__min_x) #set to left bound of in raster
+			#arcpy.AddMessage("Passed 1 while")
+			#arcpy.AddMessage("x = " +str(x))
+			#arcpy.AddMessage("max X = " +str(self.__max_x))
+			while (x < self.__max_x): #"side to side" processing
+				#arcpy.AddMessage("Passed 2 while")
+				rectangle = str(x) + " " + str(y) + " " + str(x + self.__frameX) + " " + str(y + self.__frameY) #bounds of our frame for the clip tool
+				#arcpy.AddMessage("Current rectangle: " + str(rectangle))
+				arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
+				frameCount += 1 #updating processing counter
+				arcpy.AddMessage("Processing frame #" + str(frameCount) + " out of " + str(totalFrames))
 
-				x += self.__frameX #adjust counter for positive condition
-				continue #back to beginning of while loop
+				validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count, Class_List, User_Field, Fields_List) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
+				if validFrame: #Case it passes
+					arcpy.AddMessage("Valid frame.")
+					validFrameCount += 1
+					array = arcpy.Array([arcpy.Point(x, y), arcpy.Point(x, y + self.__frameY),arcpy.Point(x + self.__frameX, y + self.__frameY),arcpy.Point(x + self.__frameX, y)]) #creating the frame polygon
+					polygon = arcpy.Polygon(array)
+					lat = y+self.__frameY/2
+					long = x+self.__frameX/2
+					cursor.insertRow([polygon,validRatio, lat, long]) #add frame to feature class with calculated attributes
 
-			x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
-		y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
-	del cursor #prevent data corruption by deleting cursor when finished
+					x += self.__frameX #adjust counter for positive condition
+					continue #back to beginning of while loop
+
+				x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
+			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
+		del cursor #prevent data corruption by deleting cursor when finished
+	except:
+		arcpy.AddMessage("Failed to process raster."))
 		
-	sym = fc.symbology
-	if hasattr(sym, 'renderer'): #draws layer with graduated symbology using 5 breakpoints, a color ramp, and slight transparency
-		sym.updateRenderer('GraduatedColorsRenderer')
-		sym.colorizer.classificationField = R
-		sym.renderer.breakCount = 5
-		
-		p = arcpy.mp.ArcGISProject("CURRENT")#determining color ramp
-		colorRamp = p.listColorRamps("White to Black")[0] #Check with Crockett to see which settings look best
-		sym.renderer.colorRamp = colorRamp
-		
-		map_lyr = arcpy.mapping.Layer(arcpy.env.workspace + os.path.split(output)[1] + ".lyr")#file path of the feature class layer file
-		map_lyr.transparency = 30# 30% transparency 
-		
-		fc.symbology = sym #assign symbology to vector output
-		#p.saveACopy(relpath + r'\\SavedOutput.aprx') #not sure if needed, would adjust save path
+	if hasattr(fc,'symbology'):#change symbology if the feature class already has symbology
+		sym = fc.symbology
+		if hasattr(sym, 'renderer'): #draws layer with graduated symbology using 5 breakpoints, a color ramp, and slight transparency
+			try:
+				sym.updateRenderer('GraduatedColorsRenderer')
+				sym.colorizer.classificationField = R
+				sym.renderer.breakCount = 5
+
+				p = arcpy.mp.ArcGISProject("CURRENT")#determining color ramp
+				colorRamp = p.listColorRamps("White to Black")[0] #Check with Crockett to see which settings look best
+				sym.renderer.colorRamp = colorRamp
+
+				map_lyr = arcpy.mapping.Layer(arcpy.env.workspace + os.path.split(output)[1] + ".lyr")#file path of the feature class layer file
+				map_lyr.transparency = 30# 30% transparency 
+
+				fc.symbology = sym #assign symbology to vector output
+			except:
+				arcpy.AddMessage("Failed to adjust symbology.")
+			#p.saveACopy(relpath + r'\\SavedOutput.aprx') #not sure if needed, would adjust save path
 		
 	arcpy.AddMessage("Finished processing raster. " + str(validFrameCount) + " valid frames found.")
 				
