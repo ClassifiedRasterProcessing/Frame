@@ -83,25 +83,12 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 	except:
 		arcpy.AddMessage("Failed to process raster."))
 		
-	if hasattr(fc,'symbology'):#change symbology if the feature class already has symbology
-		sym = fc.symbology
-		if hasattr(sym, 'renderer'): #draws layer with graduated symbology using 5 breakpoints, a color ramp, and slight transparency
-			try:
-				sym.updateRenderer('GraduatedColorsRenderer')
-				sym.colorizer.classificationField = R
-				sym.renderer.breakCount = 5
-
-				p = arcpy.mp.ArcGISProject("CURRENT")#determining color ramp
-				colorRamp = p.listColorRamps("White to Black")[0] #Check with Crockett to see which settings look best
-				sym.renderer.colorRamp = colorRamp
-
-				map_lyr = arcpy.mapping.Layer(arcpy.env.workspace + os.path.split(output)[1] + ".lyr")#file path of the feature class layer file
-				map_lyr.transparency = 30# 30% transparency 
-
-				fc.symbology = sym #assign symbology to vector output
-			except:
-				arcpy.AddMessage("Failed to adjust symbology.")
-			#p.saveACopy(relpath + r'\\SavedOutput.aprx') #not sure if needed, would adjust save path
+	try:
+		template = arcpy.mapping.Layer(arcpy.env.workspace + "Template.lyrx")#file path of the template layer file
+		template.transparency = 30# Apply transparency to template
+		arcpy.ApplySymbologyFromLayer_management(fc,template) #apply template symbology to output
+	except
+		arcpy.AddMessage("Symbology not applied.")
 		
 	arcpy.AddMessage("Finished processing raster. " + str(validFrameCount) + " valid frames found.")
 				
