@@ -81,13 +81,13 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
 		del cursor #prevent data corruption by deleting cursor when finished
 	except:
-		arcpy.AddMessage("Failed to process raster."))
+		arcpy.AddMessage("Failed to process raster.")
 		
 	try:
 		template = arcpy.mapping.Layer(arcpy.env.workspace + "Template.lyrx")#file path of the template layer file
 		template.transparency = 30# Apply transparency to template
 		arcpy.ApplySymbologyFromLayer_management(fc,template) #apply template symbology to output
-	except
+	except:
 		arcpy.AddMessage("Symbology not applied.")
 		
 	arcpy.AddMessage("Finished processing raster. " + str(validFrameCount) + " valid frames found.")
