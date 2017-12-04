@@ -84,7 +84,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		arcpy.AddMessage("Failed to process raster.")
 		
 	try:
-		template = arcpy.mapping.Layer(arcpy.env.workspace + "Template.lyrx")#file path of the template layer file
+		template = arcpy.mapping.Layer(arcpy.env.workspace + "Template.lyr")#file path of the template layer file (.lyr, .lyrx for Arc Pro)
 		template.transparency = 30# Apply transparency to template
 		arcpy.ApplySymbologyFromLayer_management(fc,template) #apply template symbology to output
 	except:
