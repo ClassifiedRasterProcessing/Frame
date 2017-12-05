@@ -46,8 +46,10 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 	frameCount = 0 #some nice counters for output while processing
 	validFrameCount = 0
-	if 
+	
+	#fix total frame calculation
 	totalFrames = int(((self.__max_y-self.__min_y)/self.__frameY*2+1) * ((self.__max_x-self.__min_x)/self.__frameX*2+1))
+	
 	start_time = time.clock()
 	run_time = 0
 	time_counter = 0
@@ -89,23 +91,28 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 						if time_counter % 10 == 0:
 							time_taken = round(time.clock() - start_time,2) #calculating runtime
 							time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
-
+					
+							
 							hours = 0
 							minutes = 0
-							if time_left > 3600:
-								hours = str(round(time_left/3600,0)) + " hours "
+							if time_left >= 3600:
+								hours = str(time_left//3600) + " hours "
 								time_left = time_left % 3600
 
-							if time_left > 60:	
-								minutes = str(round(time_left/60,0)) + " minutes "
-								time_left = str(time_left % 60) + " seconds "
+							if time_left >= 60:	
+								minutes = str(time_left//60) + " minutes "
+								time_left = str((time_left % 60)//1) + " seconds "
 
 							arcpy.AddMessage("Approximately " + hours + minutes + time_left + "remaining.")#outputting time left
 					except:
-						arcpy.AddMessage("Error calculating time remaining.")
-				except:
-					arcpy.AddMessage("Frame failed to process.")
-					error_count += 1
+						arcpy.AddMessage("Error calculating remaining time.")
+						time_taken = round(time.clock() - start_time,2) #calculating runtime
+						time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
+						arcpy.AddMessage("Debug value...time_left = " + str(time_left))
+						arcpy.AddMessage("Debug value...time_taken = " + str(time_taken))
+			except:
+				arcpy.AddMessage("Frame failed to process.")
+				error_count += 1
 			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
 		del cursor #prevent data corruption by deleting cursor when finished
 		arcpy.AddMessage("Total runtime: " + runtime)#outputs total runtime				 
