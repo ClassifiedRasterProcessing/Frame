@@ -94,14 +94,12 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 					x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
 
 					time_counter += 1
+					hours = 0
+					minutes = 0
 					try:
-						if time_counter % 10 == 0:
+						if (time_counter % 10) == 0:
 							time_taken = round(time.clock() - start_time,2) #calculating runtime
-							time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
-					
-							
-							hours = 0
-							minutes = 0
+							time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left				
 							if time_left >= 3600:
 								hours = str(time_left//3600) + " hours "
 								time_left = time_left % 3600
@@ -109,14 +107,13 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 							if time_left >= 60:	
 								minutes = str(time_left//60) + " minutes "
 								time_left = str((time_left % 60)//1) + " seconds "
-
 							arcpy.AddMessage("Approximately " + hours + minutes + time_left + "remaining.")#outputting time left
 					except:
 						arcpy.AddMessage("Error calculating remaining time.")
-						time_taken = round(time.clock() - start_time,2) #calculating runtime
-						time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
-						arcpy.AddMessage("Debug value...time_left = " + str(time_left))
-						arcpy.AddMessage("Debug value...time_taken = " + str(time_taken))
+						#time_taken = round(time.clock() - start_time,2) #calculating runtime
+						#time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
+						#arcpy.AddMessage("Debug value...time_left = " + str(time_left))
+						#arcpy.AddMessage("Debug value...time_taken = " + str(time_taken))
 			except:
 				arcpy.AddMessage("Frame failed to process.")
 				error_count += 1
@@ -137,7 +134,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 	except:
 		arcpy.AddMessage("Error applying Template at " + arcpy.env.workspace + r"\Template.lyr")
 		
-	arcpy.AddMessage("Finished processing raster.\n" + str(validFrameCount) + " valid frames found.\nWith " + str(error_count) + " errors.")
+	arcpy.AddMessage("Finished processing raster.\n" + str(validFrameCount) + " valid frames found.\n" + str(error_count) + " errors found.")
 	#runtime = "%s seconds." % (round(time.clock() - start_time,2))#Calculates runtime
 	#arcpy.AddMessage("Total runtime: " + runtime)#outputs runtime..Arc Map already does this
 				
