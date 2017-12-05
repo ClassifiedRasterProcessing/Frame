@@ -116,7 +116,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		except:
 			arcpy.AddMessage("Symbology not applied.")
 	except:
-		arcpy.AddMessage("Template unsuccessful. Template at " + arcpy.env.workspace + "Template.lyr")
+		arcpy.AddMessage("Error applying Template at " + arcpy.env.workspace + r"\Template.lyr")
 		
 	arcpy.AddMessage("Finished processing raster. " + str(validFrameCount) + " valid frames found.")
 	#runtime = "%s seconds." % (round(time.clock() - start_time,2))#Calculates runtime
