@@ -1,7 +1,7 @@
 #object definition for our frame class
 #output: feature class with polygon for each frame with its determined ratio value
 
-import arcpy, collections ,os
+import arcpy, collections, os, time
 
 class classifiedRaster: #class definition for the frames made from the whole raster
     
@@ -47,7 +47,8 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 	frameCount = 0 #some nice counters for output while processing
 	validFrameCount = 0
 	totalFrames = int(((self.__max_y-self.__min_y)/self.__frameY*2+1) * ((self.__max_x-self.__min_x)/self.__frameX*2+1))
-	
+	start_time = time.clock()
+	run_time = 0
 	try:
 		#arcpy.AddMessage("y = " +str(y))
 		#arcpy.AddMessage("max Y = " +str(self.__max_y))
@@ -57,7 +58,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 			#arcpy.AddMessage("x = " +str(x))
 			#arcpy.AddMessage("max X = " +str(self.__max_x))
 			while (x < self.__max_x): #"side to side" processing
-				#arcpy.AddMessage("Passed 2 while")
+				#arcpy.AddMessage("Passed 2 while")				
 				rectangle = str(x) + " " + str(y) + " " + str(x + self.__frameX) + " " + str(y + self.__frameY) #bounds of our frame for the clip tool
 				#arcpy.AddMessage("Current rectangle: " + str(rectangle))
 				arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
@@ -78,8 +79,14 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 					continue #back to beginning of while loop
 
 				x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
+				
+				time_taken = round(time.clock() - start_time,2) #calculating runtime
+				time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
+				arcpy.AddMessage("Approximately " + str(time_left) + " seconds remaining.")#outputting time left
+						 
 			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
 		del cursor #prevent data corruption by deleting cursor when finished
+		arcpy.AddMessage("Total runtime: " + runtime)#outputs total runtime				 
 	except:
 		arcpy.AddMessage("Failed to process raster.")
 		
@@ -94,6 +101,8 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		arcpy.AddMessage("Template unsuccessful.")
 		
 	arcpy.AddMessage("Finished processing raster. " + str(validFrameCount) + " valid frames found.")
+	runtime = "%s seconds." % (round(time.clock() - start_time,2))#Calculates runtime
+	arcpy.AddMessage("Total runtime: " + runtime)#outputs runtime
 				
 		
 def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Value,Fields_List): #determines ratio of classification
