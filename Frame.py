@@ -80,10 +80,13 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 
 				x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
 				
-				time_taken = round(time.clock() - start_time,2) #calculating runtime
-				time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
-				arcpy.AddMessage("Approximately " + str(time_left) + " seconds remaining.")#outputting time left
-						 
+				try:
+					time_taken = round(time.clock() - start_time,2) #calculating runtime
+					time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
+					arcpy.AddMessage("Approximately " + str(time_left) + " seconds remaining.")#outputting time left
+				except:
+					arcpy.AddMessage("Error calculating time remaining.")
+				
 			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
 		del cursor #prevent data corruption by deleting cursor when finished
 		arcpy.AddMessage("Total runtime: " + runtime)#outputs total runtime				 
@@ -101,8 +104,8 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		arcpy.AddMessage("Template unsuccessful.")
 		
 	arcpy.AddMessage("Finished processing raster. " + str(validFrameCount) + " valid frames found.")
-	runtime = "%s seconds." % (round(time.clock() - start_time,2))#Calculates runtime
-	arcpy.AddMessage("Total runtime: " + runtime)#outputs runtime
+	#runtime = "%s seconds." % (round(time.clock() - start_time,2))#Calculates runtime
+	#arcpy.AddMessage("Total runtime: " + runtime)#outputs runtime..Arc Map already does this
 				
 		
 def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Value,Fields_List): #determines ratio of classification
