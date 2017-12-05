@@ -85,10 +85,13 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 		
 	try:
 		template = arcpy.mapping.Layer(arcpy.env.workspace + "Template.lyr")#file path of the template layer file (.lyr, .lyrx for Arc Pro)
-		template.transparency = 30# Apply transparency to template
-		arcpy.ApplySymbologyFromLayer_management(fc,template) #apply template symbology to output
+		template.transparency = 50# Apply transparency to template
+		try:
+			arcpy.ApplySymbologyFromLayer_management(fc,template) #apply template symbology to output
+		except:
+			arcpy.AddMessage("Symbology not applied.")
 	except:
-		arcpy.AddMessage("Symbology not applied.")
+		arcpy.AddMessage("Template unsuccessful.")
 		
 	arcpy.AddMessage("Finished processing raster. " + str(validFrameCount) + " valid frames found.")
 				
