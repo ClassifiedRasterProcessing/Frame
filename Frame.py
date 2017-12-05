@@ -100,7 +100,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 						try:
 							if (time_counter % 10) == 0:
 								time_taken = round(time.clock() - start_time,2) #calculating runtime
-								time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left				
+								time_left = (time_taken//frameCount) * (totalFrames - frameCount)#average time * frames left				
 								try:
 									if time_left >= 3600:
 										hours = str(time_left//3600) + " hours "
@@ -113,10 +113,11 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 									arcpy.AddMessage("Formatting time failed.")
 								arcpy.AddMessage("Approximately " + hours + minutes + time_left + "remaining.")#outputting time left
 						except:
-							arcpy.AddMessage("Approximately " + time_left + "remaining.")
-							arcpy.AddMessage("Error calculating remaining time.")
+							time_taken = round(time.clock() - start_time,2)
+							time_left = (time_taken//frameCount) * (totalFrames - frameCount)#average time * frames left
+							arcpy.AddMessage("Approximately " + time_left + " seconds remaining.")
+							#arcpy.AddMessage("Error formatting remaining time.")
 							#time_taken = round(time.clock() - start_time,2) #calculating runtime
-							#time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
 							#arcpy.AddMessage("Debug value...time_left = " + str(time_left))
 							#arcpy.AddMessage("Debug value...time_taken = " + str(time_taken))
 				except:
