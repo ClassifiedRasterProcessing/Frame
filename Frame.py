@@ -47,8 +47,15 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 	frameCount = 0 #some nice counters for output while processing
 	validFrameCount = 0
 	
-	#fix total frame calculation
-	totalFrames = int(((self.__max_y-self.__min_y)/self.__frameY*2+1) * ((self.__max_x-self.__min_x)/self.__frameX*2+1))
+	#fixing total frame calculation
+	yDiff = ((self.__max_y-self.__min_y)/self.__frameY*2)
+	xDiff = ((self.__max_x-self.__min_x)/self.__frameX*2)
+	if yDiff %1 != yDiff:
+		yDiff += 1
+	if xDiff %1 != xDiff:
+		xDiff += 1
+	
+	totalFrames = int(xDiff * yDiff)
 	
 	start_time = time.clock()
 	run_time = 0
