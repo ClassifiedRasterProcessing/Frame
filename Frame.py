@@ -93,6 +93,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 							continue #back to beginning of while loop
 
 						x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
+						#Replace 2 with a speed factor at a later point
 
 						time_counter += 1
 						hours = 0
@@ -112,8 +113,10 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 								except:
 									arcpy.AddMessage("Formatting time failed.")
 								arcpy.AddMessage("Approximately " + hours + minutes + time_left + "remaining.")#outputting time left
+								#Worked for awhile, then stopped with no changes to this section and I'm not sure why...
+								#debug messages indicate time_taken and time_left are properly calculated, and the backup still outputs a reasonable time left
 						except:
-							time_taken = round(time.clock() - start_time,2)
+							time_taken = round(time.clock() - start_time,2)#runtime
 							time_left = (time_taken//frameCount) * (totalFrames - frameCount)#average time * frames left
 							arcpy.AddMessage("Approximately " + time_left + " seconds remaining.")
 							#arcpy.AddMessage("Error formatting remaining time.")
@@ -123,7 +126,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 				except:
 					arcpy.AddMessage("Frame failed to process.")
 					error_count += 1
-				y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
+				y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	Replace 2 with a speed factor at a later point
 		except:
 			error_count += 1
 		del cursor #prevent data corruption by deleting cursor when finished
