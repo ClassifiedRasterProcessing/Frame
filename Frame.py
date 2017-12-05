@@ -113,7 +113,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 									arcpy.AddMessage("Formatting time failed.")
 								arcpy.AddMessage("Approximately " + hours + minutes + time_left + "remaining.")#outputting time left
 						except:
-							arcpy.AddMessage("Approximately "  time_left + "remaining.")
+							arcpy.AddMessage("Approximately " + time_left + "remaining.")
 							arcpy.AddMessage("Error calculating remaining time.")
 							#time_taken = round(time.clock() - start_time,2) #calculating runtime
 							#time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
@@ -123,8 +123,8 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 					arcpy.AddMessage("Frame failed to process.")
 					error_count += 1
 				y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
-			except:
-				error_count += 1
+		except:
+			error_count += 1
 		del cursor #prevent data corruption by deleting cursor when finished
 		#arcpy.AddMessage("Total runtime: " + runtime)#outputs total runtime	Arc Map already does this			 
 	except:
