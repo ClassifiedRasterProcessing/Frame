@@ -64,62 +64,69 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 	try:
 		#arcpy.AddMessage("y = " +str(y))
 		#arcpy.AddMessage("max Y = " +str(self.__max_y))
-		while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
-			x = float(self.__min_x) #set to left bound of in raster
-			#arcpy.AddMessage("Passed 1 while")
-			#arcpy.AddMessage("x = " +str(x))
-			#arcpy.AddMessage("max X = " +str(self.__max_x))
-			try:
-				while (x < self.__max_x): #"side to side" processing
-					#arcpy.AddMessage("Passed 2 while")				
-					rectangle = str(x) + " " + str(y) + " " + str(x + self.__frameX) + " " + str(y + self.__frameY) #bounds of our frame for the clip tool
-					#arcpy.AddMessage("Current rectangle: " + str(rectangle))
-					arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
-					frameCount += 1 #updating processing counter
-					arcpy.AddMessage("Processing frame #" + str(frameCount) + " out of " + str(totalFrames))
+		try:
+			while(y < self.__max_y):#flow control based on raster size and requested frame size needed. Issue on edges, ask about.
+				x = float(self.__min_x) #set to left bound of in raster
+				#arcpy.AddMessage("Passed 1 while")
+				#arcpy.AddMessage("x = " +str(x))
+				#arcpy.AddMessage("max X = " +str(self.__max_x))
+				try:
+					while (x < self.__max_x): #"side to side" processing
+						#arcpy.AddMessage("Passed 2 while")				
+						rectangle = str(x) + " " + str(y) + " " + str(x + self.__frameX) + " " + str(y + self.__frameY) #bounds of our frame for the clip tool
+						#arcpy.AddMessage("Current rectangle: " + str(rectangle))
+						arcpy.Clip_management(self.__inras,rectangle, frame)#create frame -> clip out a section of the main raster 
+						frameCount += 1 #updating processing counter
+						arcpy.AddMessage("Processing frame #" + str(frameCount) + " out of " + str(totalFrames))
 
-					validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count, Class_List, User_Field, Fields_List) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
-					if validFrame: #Case it passes
-						arcpy.AddMessage("Valid frame.")
-						validFrameCount += 1
-						array = arcpy.Array([arcpy.Point(x, y), arcpy.Point(x, y + self.__frameY),arcpy.Point(x + self.__frameX, y + self.__frameY),arcpy.Point(x + self.__frameX, y)]) #creating the frame polygon
-						polygon = arcpy.Polygon(array)
-						lat = y+self.__frameY/2
-						long = x+self.__frameX/2
-						cursor.insertRow([polygon,validRatio, lat, long]) #add frame to feature class with calculated attributes
+						validFrame, validRatio = density(frame, self.__frame_ratio, self.__in_class, User_Field_Count, Class_List, User_Field, Fields_List) #run ratio function. Expect boolean T if frame meets ratio conditions, and actual ratio
+						if validFrame: #Case it passes
+							arcpy.AddMessage("Valid frame.")
+							validFrameCount += 1
+							array = arcpy.Array([arcpy.Point(x, y), arcpy.Point(x, y + self.__frameY),arcpy.Point(x + self.__frameX, y + self.__frameY),arcpy.Point(x + self.__frameX, y)]) #creating the frame polygon
+							polygon = arcpy.Polygon(array)
+							lat = y+self.__frameY/2
+							long = x+self.__frameX/2
+							cursor.insertRow([polygon,validRatio, lat, long]) #add frame to feature class with calculated attributes
 
-						x += self.__frameX #adjust counter for positive condition
-						continue #back to beginning of while loop
+							x += self.__frameX #adjust counter for positive condition
+							continue #back to beginning of while loop
 
-					x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
+						x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
 
-					time_counter += 1
-					hours = 0
-					minutes = 0
-					try:
-						if (time_counter % 10) == 0:
-							time_taken = round(time.clock() - start_time,2) #calculating runtime
-							time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left				
-							if time_left >= 3600:
-								hours = str(time_left//3600) + " hours "
-								time_left = time_left % 3600
+						time_counter += 1
+						hours = 0
+						minutes = 0
+						try:
+							if (time_counter % 10) == 0:
+								time_taken = round(time.clock() - start_time,2) #calculating runtime
+								time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left				
+								try:
+									if time_left >= 3600:
+										hours = str(time_left//3600) + " hours "
+										time_left = time_left % 3600
 
-							if time_left >= 60:	
-								minutes = str(time_left//60) + " minutes "
-								time_left = str((time_left % 60)//1) + " seconds "
-							arcpy.AddMessage("Approximately " + hours + minutes + time_left + "remaining.")#outputting time left
-					except:
-						arcpy.AddMessage("Error calculating remaining time.")
-						#time_taken = round(time.clock() - start_time,2) #calculating runtime
-						#time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
-						#arcpy.AddMessage("Debug value...time_left = " + str(time_left))
-						#arcpy.AddMessage("Debug value...time_taken = " + str(time_taken))
+									if time_left >= 60:	
+										minutes = str(time_left//60) + " minutes "
+										time_left = str((time_left % 60)//1) + " seconds "
+								except:
+									arcpy.AddMessage("Formatting time failed.")
+								arcpy.AddMessage("Approximately " + hours + minutes + time_left + "remaining.")#outputting time left
+						except:
+							arcpy.AddMessage("Approximately "  time_left + "remaining.")
+							arcpy.AddMessage("Error calculating remaining time.")
+							#time_taken = round(time.clock() - start_time,2) #calculating runtime
+							#time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
+							#arcpy.AddMessage("Debug value...time_left = " + str(time_left))
+							#arcpy.AddMessage("Debug value...time_taken = " + str(time_taken))
+				except:
+					arcpy.AddMessage("Frame failed to process.")
+					error_count += 1
+				y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
 			except:
-				arcpy.AddMessage("Frame failed to process.")
 				error_count += 1
-			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
 		del cursor #prevent data corruption by deleting cursor when finished
-		arcpy.AddMessage("Total runtime: " + runtime)#outputs total runtime				 
+		#arcpy.AddMessage("Total runtime: " + runtime)#outputs total runtime	Arc Map already does this			 
 	except:
 		arcpy.AddMessage("Failed to process raster.")
 		
