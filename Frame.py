@@ -49,6 +49,7 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 	totalFrames = int(((self.__max_y-self.__min_y)/self.__frameY*2+1) * ((self.__max_x-self.__min_x)/self.__frameX*2+1))
 	start_time = time.clock()
 	run_time = 0
+	time_counter = 0
 	try:
 		#arcpy.AddMessage("y = " +str(y))
 		#arcpy.AddMessage("max Y = " +str(self.__max_y))
@@ -80,13 +81,26 @@ class classifiedRaster: #class definition for the frames made from the whole ras
 
 				x = int(x) + int(float(self.__frameX)//2)#move half a frame "right"...case when previous frame invalid "Fast option"
 				
+				time_counter += 1
 				try:
-					time_taken = round(time.clock() - start_time,2) #calculating runtime
-					time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
-					arcpy.AddMessage("Approximately " + str(time_left) + " seconds remaining.")#outputting time left
+					if time_counter % 10 == 0:
+						time_taken = round(time.clock() - start_time,2) #calculating runtime
+						time_left = (time_taken/frameCount) * (totalFrames - frameCount)#average time * frames left
+
+						hours = 0
+						minutes = 0
+						if time_left > 3600:
+							hours = str(round(time_left/3600,0)) + " hours "
+							time_left = time_left % 3600
+
+						if time_left > 60:	
+							minutes = str(round(time_left/60,0)) + " minutes "
+							time_left = str(time_left % 60) + " seconds "
+
+						arcpy.AddMessage("Approximately " + hours + minutes + time_left + "remaining.")#outputting time left
 				except:
 					arcpy.AddMessage("Error calculating time remaining.")
-				
+			
 			y = float(y) + int(float(self.__frameY)//2)#move half a frame "up" ... "Fast option"	
 		del cursor #prevent data corruption by deleting cursor when finished
 		arcpy.AddMessage("Total runtime: " + runtime)#outputs total runtime				 
