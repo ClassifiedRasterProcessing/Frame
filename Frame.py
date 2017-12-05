@@ -125,19 +125,19 @@ def density(inras, ratio, inclass, User_Field_Count, Class_List, User_Field_Valu
 			#if row[ValueColumn] == inclass: #calc frequency of the classification requested
 			if int(row.getValue(User_Field_Value)) == int(inclass): #calc frequency of the classification requested
 				frequency = row.getValue(User_Field_Count)
-				arcpy.AddMessage("Frequency = " + str(row.getValue(User_Field_Count)))
+				#arcpy.AddMessage("Frequency = " + str(row.getValue(User_Field_Count)))
 			total += row.getValue(User_Field_Count) #calculates sum
-			arcpy.AddMessage("Total = " + str(total))
+			#arcpy.AddMessage("Total = " + str(total))
 		except:
-			arcpy.AddMessage("Not in frame.")
+			#arcpy.AddMessage("Not in frame.")
 			return False, 0
 		
 	if total == 0: #preventing dividing by 0, case where there is nothing in the frame
-		arcpy.AddMessage("Frame empty.") #Potentially adjust angle of rectangle to match that of the raster, would save processing
+		#arcpy.AddMessage("Frame empty.") #Potentially adjust angle of rectangle to match that of the raster, would save processing
 		return False, 0
 	
 	final_ratio = float(frequency)/float(total) #Calculates ratio for user input classification
-	arcpy.AddMessage("Frame has density = " + str(final_ratio))
+	#arcpy.AddMessage("Frame has density = " + str(final_ratio))
 	if final_ratio >= ratio: 
 		return True, final_ratio #Returns true and final ratio if user input is met
 	else:
